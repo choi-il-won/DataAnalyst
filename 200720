@@ -1,0 +1,351 @@
+boolean
+파이썬에는 명시적인 것이 암시적인 것보다 낫다라는 철학이 있습니다.
+True나 False는 0과 1로도 표현할 수 있으나 명시적으로 표현하기 위해 True와 False를 사용합니다.
+In [5]:
+
+
+
+# True를 출력해 보세요.
+True
+
+
+Out[5]:
+True
+In [7]:
+
+
+# False 를 출력해 보세요.
+False
+
+
+Out[7]:
+False
+In [8]:
+
+
+# True는 1과 같음을 표현해 보세요. 파이썬에서는 같음을 비교할 때 == 연산을 사용합니다.
+True == 1
+
+
+Out[8]:
+True
+In [9]:
+
+
+
+# False는 0과 같음을 표현해 보세요. 파이썬에서는 같음을 비교할 때 == 연산을 사용합니다.
+False == 0
+
+
+Out[9]:
+True
+In [10]:
+
+
+# 하지만 True는 문자 1과는 다릅니다. 1을 따옴표로 감싸면 문자열이 됩니다.
+True == "1"
+
+
+Out[10]:
+False
+In [11]:
+
+
+# 문자열 1과 True는 다릅니다.
+"1" == True
+
+
+Out[11]:
+False
+In [14]:
+
+
+# False 도 마찬가지 입니다. 
+False =="0"
+
+
+Out[14]:
+False
+In [15]:
+
+
+# 문자열 0과 False는 다릅니다.
+"0" == False
+
+
+Out[15]:
+False
+In [18]:
+
+
+# and 연산으로 True 값 끼리 비교합니다.
+# and 는 모든 값이 True 일때만 True 가 됩니다.
+True and True
+
+
+Out[18]:
+True
+In [19]:
+
+
+# and 는 조건 중 하나라도 False 라면 False가 됩니다.
+True or False
+
+
+Out[19]:
+True
+In [20]:
+
+
+# or 는 하나만 True 라도 True가 됩니다.
+True or False
+
+
+Out[20]:
+True
+
+Number and String
+숫자 1과 문자 "1"은 다릅니다. 숫자1과 문자1의 데이터 타입을 출력해 보세요.
+데이터 타입을 표현할 때 type을 통해 데이터를 출력합니다.
+In [21]:
+
+
+# 숫자 1을 출력해 보세요.
+1
+
+
+Out[21]:
+1
+In [22]:
+
+
+# 문자 1을 출력해 보세요.
+"1"
+
+
+Out[22]:
+'1'
+In [29]:
+
+
+# 숫자 1의 데이터 타입을 출력해 보세요.
+type(1.0)
+
+
+Out[29]:
+float
+In [26]:
+
+
+# 문자 1의 데이터 타입을 출력해 보세요.
+type("1")
+
+
+Out[26]:
+str
+In [30]:
+
+
+# 문자 1과 숫자 1을 비교합니다.
+1 == "1"
+
+
+Out[30]:
+False
+
+Strings and Lists
+https://docs.python.org/3/tutorial/introduction.html#strings
+https://docs.python.org/3/tutorial/introduction.html#lists
+In [32]:
+
+
+# "Hello World!" 를 출력해 봅니다.
+"Hello World!"
+
+
+Out[32]:
+'Hello World!'
+In [33]:
+
+
+# 주소 "서울시 마포구 공덕동" 을 출력해 봅니다.
+"서울시 마포구 공덕동 "
+
+
+Out[33]:
+'서울시 마포구 공덕동 '
+
+연산자
+기능
+==
+비교연산
+=
+할당연산
+
+strings
+In [34]:
+
+
+# til 이라는 변수에 문자열을 담아봅니다.
+til= "Today I Learned"
+til
+
+
+Out[34]:
+'Today I Learned'
+In [36]:
+
+
+# 소문자로 만들어 보세요.
+til.lower()
+
+
+Out[36]:
+'today i learned'
+In [37]:
+
+
+# 대문자로 만들어 보세요.
+til.upper()
+
+
+Out[37]:
+'TODAY I LEARNED'
+
+lists
+In [39]:
+
+
+# 비어있는 리스트를 만듭니다.
+type([])
+
+
+Out[39]:
+list
+In [40]:
+
+
+# 스타벅스와 이디야를 원소에 추가합니다.
+["스타벅스", "이디야"]
+
+
+Out[40]:
+['스타벅스', '이디야']
+In [45]:
+
+
+# cafe 라는 변수에 카페명을 담아봅니다.
+cafe = ["스타벅스", "이디야", "폴바셋"]
+print(cafe)
+​
+
+
+
+['스타벅스', '이디야', '폴바셋']
+In [46]:
+
+
+# cafe 라는 변수에 담겨있는 카페명을 인덱싱을 통해 가져옵니다.
+cafe
+
+
+Out[46]:
+['스타벅스', '이디야', '폴바셋']
+In [48]:
+
+
+# 1번 인덱스를 가져옵니다.
+cafe[1]
+
+
+Out[48]:
+'이디야'
+In [53]:
+
+
+# 마지막 인덱스를 가져옵니다.
+cafe[2]
+
+
+Out[53]:
+'폴바셋'
+In [52]:
+
+
+cafe[-1]
+
+
+Out[52]:
+'폴바셋'
+
+Control Flow
+4. More Control Flow Tools — Python documentation
+제어문 - 조건문, 반복문
+In [57]:
+
+
+# 반복문을 통해 리스트의 원소를 하나씩 출력합니다.
+# for 변수 in 리스트: 
+# 제어문 다음줄에는 꼭 들여쓰기된 문장이 한줄이상 있어야 합니다.
+for c in cafe:
+    print(c)
+
+
+
+스타벅스
+이디야
+폴바셋
+In [66]:
+
+
+# 위 코드에서 스타벅스일 때는 그대로 출력하고 나머지 텍스트는 "기타"라고 출력합니다
+# 출력 결과가 아래의 순서로 나오도록 합니다.
+# 스타벅스
+# 기타
+# 기타
+for c in cafe:
+    if c == "스타벅스" :
+        print(c)
+    else :
+        print("기타")
+
+
+
+스타벅스
+기타
+기타
+In [67]:
+
+
+# range를 사용하면 for문의 반복수를 지정할 수 있습니다.
+​
+for i in range(1,10):
+    print(i)
+
+
+
+1
+2
+3
+4
+5
+6
+7
+8
+9
+In [68]:
+
+
+
+# range 를 사용해 5번 for문을 반복하도록 하고 인덱스 번호가 짝수일 때 스타벅스를 홀수 일 때 이디야를 출력하도록 합니다.
+​
+for i in range(5): 
+    print(i)
+
+
+
+0
+1
+2
+3
+4
