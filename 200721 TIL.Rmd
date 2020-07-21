@@ -1,0 +1,141 @@
+---
+title : "한강공원 고객 특성 파악"
+
+author : "작성자"
+
+date: '2020-07-07'
+
+output : 
+  rmdformats::readthedown : 
+    code_folding : hide 
+    number_sections : true 
+    self_contained : true
+    lightbox: true
+    gallery : true 
+        
+        
+---
+
+ 
+
+
+
+
+
+
+
+
+
+
+# **이용객 많은 공원과 주문량이 많은 공원이 다르다?!**
+
+
+
+```{r}
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+$$  $$
+
+
+*글자*가 눕습니다
+
+**강조**가 표시됩니다
+
+# 소제목
+
+[출처] : https://www.naver.com
+
+
+### 주문량의 일정한 차이 
+
+월요일을 기준으로 주말에 주문량이 올라가는 형태가 일주일 단위 패턴으로 반복됩니다.
+
+5/6(월) - 대체 공휴일 영향으로 예외적으로 주문증가)
+
+
+```{r warning = FALSE, message = FALSE}
+
+library(tidyverse)
+library(readxl)
+setwd("C:/Users/user/Documents/1차 프로젝트 파일")
+MAY_CALL<- read_xlsx("5월 주문전화량.xlsx")
+
+MAY_CALL_HANGANG <- MAY_CALL %>% 
+  select(일자, 요일, 시간대, 업종, 읍면동, 통화건수) %>%
+  filter(읍면동 %in% c('잠원동','반포동','잠실동','망원동','이촌동','암사동','여의도동','상암동','자양동','방화동'))
+
+MAY_CALL_HANGANG$읍면동 <- str_replace_all(MAY_CALL_HANGANG$읍면동, c("망원동" = "망원", "상암동" = "난지", "방화동" = "강서", "잠실동"= "잠실", "잠원동"="잠원", "반포동"="반포", "여의도동"="여의도","암사동"= "광나루", "자양동"="뚝섬","방화동"="강서","이촌동"="이촌"))
+
+MAY_CALL_HANGANG$통화건수 <- as.numeric(MAY_CALL_HANGANG$통화건수)
+MAY_CALL_HANGANG$일자 <- as.POSIXct(MAY_CALL_HANGANG$일자, format = "%Y%m%d")
+MAY_CALL_HANGANG$요일 <- factor(MAY_CALL_HANGANG$요일,
+                             levels = c("월", "화", "수","목","금","토","일"))
+
+MAY_GROUP_MONTH <- MAY_CALL_HANGANG %>%
+  group_by(일자,업종) %>%
+  summarize(통화건수 = sum(통화건수)) %>% as.data.frame()
+
+ggplot(MAY_GROUP_MONTH, aes(x = 일자, y = 통화건수)) + 
+  geom_bar(stat="identity", aes(fill = 업종))+
+  ggtitle('19년 5월 한강공원 전체 음식 업종별 통화건수')
+
+```
+
+### 주문량의 일정한 차이 
+
+평일과 주말의 주문패턴을 비교해보면 패턴이 비슷하다
+한강을 이용하는 사람들은 평소 주문하는 시간대에 
+배달 주문을 한다는 것을 알 수 있다. 
+
+```{r warning = FALSE, message = FALSE}
+
+MAY_GROUP_TIME_P <- MAY_CALL_HANGANG%>%  
+  select(일자, 요일, 시간대, 업종, 읍면동, 통화건수) %>%
+  filter(요일 %in% c('월','화','수','목')) %>% group_by(시간대,업종) %>%
+  summarize(통화건수 = sum(통화건수)) %>% as.data.frame()
+
+ggplot(MAY_GROUP_TIME_P, aes(x=시간대, y=통화건수, group = 업종, colour=업종)) + 
+  geom_line(size=1) + geom_point(size=2)+ 
+  xlab('시간대') + 
+  ylab('통화건수') +
+  ggtitle('한강공원 평일 시간대별 통화 누적 그래프')+ coord_cartesian(ylim=c(0, 2150))
+
+
+MAY_GROUP_TIME_W <- MAY_CALL_HANGANG%>%  
+  select(일자, 요일, 시간대, 업종, 읍면동, 통화건수) %>%
+  filter(요일 %in% c('금','토','일')) %>% group_by(시간대,업종) %>%
+  summarize(통화건수 = sum(통화건수)) %>% as.data.frame()
+
+ggplot(MAY_GROUP_TIME_W, aes(x=시간대, y=통화건수, group = 업종, colour=업종)) + 
+  geom_line(size=1) + geom_point(size=2)+ 
+  xlab('시간대') + 
+  ylab('통화건수') +
+  ggtitle('한강공원 주말 시간대별 통화 누적 그래프')+ coord_cartesian(ylim=c(0, 2150))
+
+
+
+
+```
+
+
+
+```{r}
+
+
+
+
+```
+
