@@ -1,0 +1,41 @@
+# 회귀계수 = 민감도 
+# 회귀계수는 표준화를 해야함 
+# 표준화된 회귀계수는 상대적인 크기만 비교할 뿐 회귀모형에는 사용하지 않는다.
+# 회귀모형의 선형지표는 RMSA를 많이 쓴다 
+# 입력변수의 세트도 모형이 된다 
+
+
+library(tidyverse);library(psych)
+guess_encoding(file='https://bit.ly/korean_cars') - 텍스트 인코딩 확인 
+kcars<-read.csv(file='https://bit.ly/korean_cars',
+fileEncoding='EUC-KR')
+glimpse(x=kcars)
+describe(object=kcars)
+
+
+요약데이터를 확인하고 불필요한컬럼 및 행을 삭제합니다. (데이터를 구하기 어려워서 삭제) 
+>summary(object=kcars)
+>kcars<-kcars%>%select(-LPG,-하이브리드)
+>kcars<-kcars%>%filter(회사명%in%c('기아','쉐보레','현대'))
+
+
+# 상관성 분석을 먼저 하고 불필요한 부분은 버린다 
+
+
+-- 최근접이웃(KNN)--- 
+# 거리가 가까울 수록 유사한다 
+# 거리를 잴 떄는 표준화를 해야한다 
+# 스케일의 차이로 인하여 거리는 반드시 표준화를 해줘야 한다(스케일이 같으면 표준화를 할 필요가 없다) 
+# K는 보통 홀수개로 한다 (짝수면 같은 값이 나올 확률이 높음) 
+# K- 최근접이웃 알고리즘은 사례 기반 추론에 속함 
+# 거리 측정 방법은 보통 유클리디안 방법을 쓴다 
+# 단점 : K에 따라서 결과가 달라짐
+
+
+
+
+
+
+
+
+
