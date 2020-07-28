@@ -31,6 +31,46 @@ describe(object=kcars)
 # 거리 측정 방법은 보통 유클리디안 방법을 쓴다 
 # 단점 : K에 따라서 결과가 달라짐
 
+- 가중치 없는 knn 모형 
+---kknn 패키지 함수 주요 인자---- 
+
+○ formula:입력변수와 목표변수간 관계를 표현식으로 할당합니다. 틸드(~)를중간에삽입합니다.
+○ train:훈련셋을 할당합니다.
+○ test:시험셋을 할당합니다.
+○ k:참고할이웃의 수를 할당합니다.
+○ distance:Minkowski거리에서의 p값을 정수로 입력합니다.(1:맨하탄,2:유클리디안)
+○ kernel:가중치를부여방법을지정합니다.‘rectangular’(가중치없음),‘triangular’(가중치있음)
+○ scale:입력변수를데이터표준화처리여부를지정합니다.기본값은TRUE입니다
+
+
+k<-trainSet%>%nrow()%>%sqrt()%>%ceiling()
+ceiling() - k를 정수로 하기 떄문데 숫자올림 
+
+
+str(fitN)
+List of 10
+ $ fitted.values: Factor w/ 2 levels "best","good": 2 2 1 2 2 2 2 2 2 1 ...
+ $ CL           : chr [1:1470, 1:59] "good" "good" "best" "good" ...
+ $ W            : num [1:1470, 1:59] 1 1 1 1 1 1 1 1 1 1 ...
+ $ D            : num [1:1470, 1:59] 0 1.257 0 0.935 0.859 ...
+ $ C            : num [1:1470, 1:59] 2495 1158 2678 1539 1718 ...
+ $ prob         : num [1:1470, 1:2] 0.0508 0 0.8305 0 0.0847 ...
+
+fitted.values - 시험셋에 대한 추정값 
+
+
+* 강의안에서 wine$quality 지우기 
+wine$grade<-ifelse(test=wine$quality>=7,yes='best',no='good')
+
+
+# roc 커브는 추정확률로 구한다 
+
+--- #표본 균형화#----- 
+
+다수범주 = Under(down) Sampling = 다수범주의 관측값을소수범주 개수만큼 임의로 제거합니다
+소수범주 = Over(up) Sampling = 소수범주의 관측값을 다수범주 개수만큼 단순하게 복제합니다
+SMOTE = 다수범주는 임의로 제거하고,소수범주는 단순복사하는 대신 가까운 이웃중 하나를 임의로 선택하여 두 점간 새로운 점을 추가합니다.
+ * SMOTE가 제일 BEST!! 
 
 
 
