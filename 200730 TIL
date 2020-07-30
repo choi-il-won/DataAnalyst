@@ -1,0 +1,254 @@
+# 로지스틱 회귀 분석 
+
+- 선형 회귀 분석과의 공통점은 목표변수를 입력 변수들의 선형결합으로 표현
+
+- 로지스틱 회귀 분석의 장점은 0~1 값을 갖는 추정확률을 반환한다는 점
+
+- 금융회사에서 로지스틱을 주로 사용하는 분야는 리스크 관리 
+
+- FDS = 이상거래탐지 시스템 
+
+- 회계자료를 활용하면 기업의 상장폐지 여부, 경제적 부실 징후 판단하는 모형도 로지스틱 회귀분석 사용 가능 
+
+- 로지스틱 회귀 분석은 오즈로 시작 
+
+         성공횟수(확률)     P
+- 오즈 = --------------  = ---- 
+         실패횟수(확률)    1- P
+
+- 오즈는 성공할 횟수 또는 확률이 실패할 횟수 또는 확률의 몇배인지를 표기한 것
+
+
+- P는 입력변수 행렬 X가 주어졌을때 
+- P( y= 1|X) = y가 1이 되는 확률 
+- P( y= 0|X) = y가 0이 되는 확률 
+
+- 최대 고르 가능도 기법 = 실제 데이터의 y의 값이 1일 떄 1로 0이면 0으로 추정한다
+
+- 오즈에 로그를 씌운 값을 로짓
+
+- 로지스틱 회귀식 한 번 살펴보기 
+
+- 로짓함수를 입력변수의 선형결합으로 변형하면 추정확률을 계산 할 수 있다 
+
+- 가능도 함수 = 확률은 모르지만 추정한 것 , 가능도는 알고 있는 사실
+
+- 가능도는 전체를 전부 보지 못할 때 샘플을 분석한 값으로 결과를 추정하는 방식
+
+- 가능도 함수는 0~1 사이의 값이 같습니다.
+
+
+- admit, rank = 명목형으로 바꿔줘야 함 
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 오늘의 실습 코드 
+
+library(tidyverse)
+
+getwd()
+
+univ <- read.csv(file='https://bit.ly/university_admit')
+
+#구조 확인
+glimpse(x=univ)
+summary(univ)
+
+#admit,rank는 factor로 바꿔줘야한다 (범주형으로 바꿔줘야함)
+#map 함수를 써서 바꿔주는 것을 추천 
+#범주형으로 바꾸면 summary로 확인하면 빈도수를 알 수가 있다 
+univ[,c(1,4)]<-map_df(.x=univ[,c(1,4)],.f=as.factor)
+summary(object=univ)
+
+#확인하면 불균형한 데이터 확인이 가능해야함 
+univ$admit%>%table()%>%prop.table()
+
+#연속형 입력변수와 목표변수간 상관성이있는지 그래프로 확인.
+boxplot(formula = gre~admit,data=univ)
+
+#전체의 평균을 그려주기 
+abline(h= mean(x= univ$gre), col= 'red' , lty =2)
+
+boxplot(formula = gpa~admit,data=univ)
+abline(h= mean(x= univ$gpa), col= 'red' , lty =2)
+
+#범주형 입력변수와 목표변수간 상관성이 있는지 그래프로 확인
+table(univ$admit , univ$rank) %>% prop.table(margin = 2)
+
+
+# 데이터 분할하기
+# 전체 데이터셋의 70%를 훈련용,30%를 시험용 데이터로 분리
+set.seed(1234)
+n <- nrow(x=univ)
+index <-sample(x=n,size=n*0.7,replace=FALSE)
+length(x=index)
+
+#`index`의 원소를 행번호로 포함한 `trainSet`과 제외한`testSet`을 생성
+trainSet<-univ%>%slice(index)
+testSet<-univ%>%slice(-index)
+
+table(trainSet$admit) %>% prop.table()
+table(testSet$admit) %>% prop.table()
+
+# R에서 로지스틱 회귀모형을 적합할때 glm() 함수를 사용
+
+fitC<-glm(formula=admit~.,
+          data=trainSet,
+          family=binomial(link='logit'))
+
+summary(fitC) #밑에 내용과 같이 봐야함 
+
+# Null deviance 크면 클 수록 안 좋음 
+# 로지스틱은 이탈도 간에 차이를 카이제곱 통계량을 보고 알 수 있음 
+# Null deviance , Residual deviance 차이를 본다 (크면 클 수록 좋음 )
+# 범주형 `rank`컬럼 대신 더미변수가 3개 새로 생성 (더미변수는 레벨의 수 -1만큼 생성 ) 
+# 더미변수가 레벨의 수만큼 생성되면 다중공선성 문제가 발생 
+# 강의책 더미변수의 의미(꼭 참고)
+
+
+# 로지스틱 회귀 모형의 유의선 검정
+# 이탈도의 값이 작을수록 데이터가 잘 적합되었다는 것을 의미 
+
+# fitC는 리스트 형 객체
+
+#카이제곱 검정 통계량 실행 
+pchisq(q=fitC$null.deviance-fitC$deviance, #두모형의 이탈도 간 차이를 검정통계량으로 설정
+        
+        df=fitC$df.null-fitC$df.residual, #두모형이 추정할 모수의 차이를 자유도로 설정
+        
+        lower.tail=FALSE) #lower.tail은 단측검정
+
+#입력변수가 사용 된 것이 통계적으로 차이가 난다. 
+#양측검정 = 두개가 같지 않다 (t-test , 정규분포에 쓰임)
+
+## 회귀 계수의 유의성 검정 
+
+result<-summary(object=fitC) #summary()함수 회귀모형 결과 객체를 할당하여 실행하면 리스트자료형이 반환
+
+result$coefficients
+class(result$coefficients)
+
+#회귀모형의 검정을 통과 못했다고 그 데이터를 버리면 안 된다
+
+#오즈비 = 성공할 확률을 실패할 확률로 나눈 것 
+#오즈비에 로그를 씌운 것이 로짓 
+#입력변수가 1단위 증가하면 회귀모형의 추정확률이 오즈비만큼 배수로 증가한다
+
+fitC$coefficients%>%exp() # 밑에 내용 참고 
+#각각의 의미는`rank`값이 1인학생에 비해서 `rank`값이 2~4인학생들의 합격 할 비율
+#`rank2`의 오즈비가 0.63467179이므로,`rank`가 1인학생에비해 `rank`가 
+# 2인학생들은 합격할 확률이 절반수준으로 낮아진다는 의미입니다.
+# `rank3`의 오즈비는 0.31167141이고 `rank4`의 오즈비는 0.21509161이므로,
+# 이또한`rank`가 1인학생에 비해 합격할 확률이 지속적으로 낮아지는 현상을 보입니다
+
+#표준화 회귀계수를 출력  
+library(reghelper)
+beta(model = fitC) #다중공선성은 확인하지 않아도 됨
+
+# 로지스틱 회귀모형은 목표변수의 추정확률을 반환
+# 분석가가 추정확률로 목표변수를 라벨링(예제에서는 합격 또는 불합격으로 분류)하려면
+# 분리기준점(cut-off)을 설정
+# 분리 기준점을 0.5로 설정하는 경우가 많음 
+
+#시험셋으로 목표변수의 추정확률을 생성
+probC <- predict(object=fitC, newdata=testSet, type='response')
+probC
+
+#분리기준점(cut-off)을 0.5로 설정하여 라벨링하고 범주형벡터로 변환
+predC<-ifelse(test=probC>=0.5 , yes=1, no=0)%>%as.factor()
+
+# 시험셋의 실제값을 `real`에 할당
+real<-testSet$admit
+
+## 분류모형의 성능 평가 
+#혼동행렬 출력 
+library(caret)
+confusionMatrix(data=predC, reference=real, positive='1')
+
+
+# F1점수를출력합니다.
+library(MLmetrics)
+F1_Score(y_true=real, y_pred=predC, positive='1')
+
+
+#추정확률로 ROC곡선을 그리고 AUC를 출력
+library(pROC)
+roc(response=real, predictor=probC)%>%
+  plot(main='ROC곡선', col='red', lty=1)
+auc(response=real,predictor=probC)
+
+
+#MCC 가 최대가 되는 컷 오프를  찾기
+cuts <- seq(from = 0.01, to = 1.00, by = 0.01)
+​
+mccs <- c()
+for (cut in cuts) {
+  pred <- ifelse(test = probC >= cut, yes = '1', no = '0')
+  pred <- factor(x = pred, levels = c(0, 1))
+  mcc <- mccr(act = real, pred = pred)
+  mccs <- c(mccs, mcc)
+}
+mccs
+
+# 추정확률 박스 플롯으로 그리기 
+boxplot(formula=probC~real)
+
+# 분리기준점(0.41)을추가
+abline(h=0.41 ,col='red',lty=2)
+
+#목표변수의 실제값 비중을 확인하고 그 기준으로설정
+rate <-  table(real) %>% prop.table()
+abline(h=rate[2], col='red', lty=3, lwd=3)
+
+
+plot(x = cuts, y = mccs, type = 'l')
+abline(h = max(mccs), col = 'red', lty = 3, lwd = 2)
+locs <- which(x = mccs == max(mccs))
+which.max(x = mccs)
+cuts[locs]
+
+predC <- ifelse(test = probC >= 0.41, yes = '1', no = '0')
+predC <- as.factor(x = predC)
+predC
+
+confusionMatrix(data = predC, reference = real, positive = '1')
+F1_Score(y_true = real, y_pred = predC, positive = '1')
+
+roc(response = real, predictor = probC) %>% 
+  plot(main = 'ROC 곡선')
+
+auc(response = real, predictor = probC)
+
+
+boxplot(formula = probC ~ real)
+abline(h = 0.5, col = 'red')
+
+rate <- table(real) %>% prop.table()
+rate[2]
+
+predC <- ifelse(test = probC >= rate[2], yes = '1', no = '0')
+predC <- as.factor(x = predC)
+predC
+
+confusionMatrix(data = predC, reference = real, positive = '1')
+F1_Score(y_true = real, y_pred = predC, positive = '1')
+
+roc(response = real, predictor = probC) %>% 
+  plot(main = 'ROC 곡선')
+
+auc(response = real, predictor = probC)
+
+boxplot(formula = probC ~ real)
+abline(h = rate[2], col = 'red')
+Col
+
+
+
+
+
+
+
+
+
+
+
